@@ -5,9 +5,9 @@ import { ShoppingBag, Menu, User, Package } from "lucide-react";
 import { SearchBar } from "@/components/home/search-bar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth, UserButton } from "@clerk/nextjs";
+import { useCartStore } from "@/lib/stores/cart.store";
 
 import { cn } from "@/lib/utils";
-import { usePathname } from "next/navigation";
 
 const navLinks = [
   { label: "Woman", href: "/products?category=woman" },
@@ -16,11 +16,12 @@ const navLinks = [
   { label: "Sale", href: "/products?sale=true" },
 ];
 
-export function Navbar({ cartItemCount = 0 }: { cartItemCount?: number }) {
-  const pathname = usePathname();
-  if (pathname.startsWith("/admin")) return null;
+export function Navbar() {
   const { isSignedIn } = useAuth();
-  const cartCount = isSignedIn ? cartItemCount : 0;
+  const cartCount = useCartStore((state) =>
+    state.items.reduce((sum, item) => sum + item.quantity, 0)
+  );
+  const displayCount = isSignedIn === false ? 0 : cartCount;
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-stone-100">
@@ -51,19 +52,19 @@ export function Navbar({ cartItemCount = 0 }: { cartItemCount?: number }) {
                   {isSignedIn ? (
                     <div className="flex items-center gap-3">
                       <UserButton>
-                        <UserButton.MenuItems>
-                          <UserButton.Link
-                            label="My Account"
-                            labelIcon={<User size={14} />}
-                            href="/account"
-                          />
-                          <UserButton.Link
-                            label="My Orders"
-                            labelIcon={<Package size={14} />}
-                            href="/orders"
-                          />
-                        </UserButton.MenuItems>
-                      </UserButton>
+              <UserButton.MenuItems>
+                <UserButton.Link
+                  label="My Account"
+                  labelIcon={<User size={14} />}
+                  href="/account"
+                />
+                <UserButton.Link
+                  label="My Orders"
+                  labelIcon={<Package size={14} />}
+                  href="/orders"
+                />
+              </UserButton.MenuItems>
+            </UserButton>
                       <Link
                         href="/account"
                         className="text-sm tracking-[0.15em] uppercase text-stone-600 hover:text-stone-900 font-light"
@@ -122,19 +123,19 @@ export function Navbar({ cartItemCount = 0 }: { cartItemCount?: number }) {
           <div className="hidden md:block">
             {isSignedIn ? (
               <UserButton>
-                <UserButton.MenuItems>
-                  <UserButton.Link
-                    label="My Account"
-                    labelIcon={<User size={14} />}
-                    href="/account"
-                  />
-                  <UserButton.Link
-                    label="My Orders"
-                    labelIcon={<Package size={14} />}
-                    href="/orders"
-                  />
-                </UserButton.MenuItems>
-              </UserButton>
+              <UserButton.MenuItems>
+                <UserButton.Link
+                  label="My Account"
+                  labelIcon={<User size={14} />}
+                  href="/account"
+                />
+                <UserButton.Link
+                  label="My Orders"
+                  labelIcon={<Package size={14} />}
+                  href="/orders"
+                />
+              </UserButton.MenuItems>
+            </UserButton>
             ) : (
               <Link
                 href="/sign-in"
@@ -150,9 +151,9 @@ export function Navbar({ cartItemCount = 0 }: { cartItemCount?: number }) {
             className="relative text-stone-500 hover:text-stone-900 transition-colors"
           >
             <ShoppingBag size={18} />
-            {cartCount > 0 && (
+            {displayCount > 0 && (
               <span className="absolute -top-1.5 -right-1.5 bg-[#2a1f18] text-[#f0ebe3] text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-light">
-                {cartCount}
+                {displayCount}
               </span>
             )}
           </Link>

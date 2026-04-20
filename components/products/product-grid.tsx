@@ -7,7 +7,7 @@ import { useState, useTransition } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { SerializedProductWithCategory, SerializedCategory } from "@/lib/serialize";
 import { formatPrice, cn } from "@/lib/utils";
-import { addToCartAction } from "@/lib/actions/cart.actions";
+import { useCartStore } from "@/lib/stores/cart.store";
 
 
 
@@ -15,10 +15,22 @@ import { addToCartAction } from "@/lib/actions/cart.actions";
 
 function ProductCard({ product }: { product: SerializedProductWithCategory }) {
   const [hovered, setHovered] = useState(false);
-  const [isPending, startTransition] = useTransition();
+  const addItem = useCartStore((state) => state.addItem);
+  const [added, setAdded] = useState(false);
 
   const handleQuickAdd = () => {
-    startTransition(async () => { await addToCartAction(product.id) });
+    addItem({
+      id: product.id,
+      productId: product.id,
+      name: product.name,
+      slug: product.slug,
+      price: product.price,
+      image: product.images[0] ?? "",
+      category: product.category.name,
+      stock: product.stock,
+    });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
   };
 
   const isNew =
@@ -30,10 +42,10 @@ function ProductCard({ product }: { product: SerializedProductWithCategory }) {
   const badge = isOutOfStock
     ? { label: "Sold Out", dark: false }
     : isNew
-      ? { label: "New In", dark: true }
-      : isLowStock
-        ? { label: "Low Stock", dark: false }
-        : null;
+    ? { label: "New In", dark: true }
+    : isLowStock
+    ? { label: "Low Stock", dark: false }
+    : null;
 
   return (
     <div
@@ -96,7 +108,7 @@ function ProductCard({ product }: { product: SerializedProductWithCategory }) {
         {/* Quick Add */}
         {!isOutOfStock && (
           <div className="absolute bottom-0 inset-x-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-            <button onClick={handleQuickAdd} className="w-full bg-[#2a1f18] text-[#f0ebe3] py-3 text-[10px] tracking-[0.2em] uppercase font-normal hover:bg-[#3d2f25] transition-colors">
+            <button className="w-full bg-[#2a1f18] text-[#f0ebe3] py-3 text-[10px] tracking-[0.2em] uppercase font-normal hover:bg-[#3d2f25] transition-colors">
               Quick Add
             </button>
           </div>

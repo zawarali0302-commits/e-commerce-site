@@ -5,7 +5,7 @@ import { Minus, Plus, Share2 } from "lucide-react";
 import { WishlistButton } from "@/components/ui/wishlist-button";
 import { SerializedProductWithCategory } from "@/lib/serialize";
 import { formatPrice, cn } from "@/lib/utils";
-import { addToCartAction } from "@/lib/actions/cart.actions";
+import { useCartStore } from "@/lib/stores/cart.store";
 
 interface ProductInfoProps {
   product: SerializedProductWithCategory;
@@ -40,12 +40,21 @@ export function ProductInfo({ product, avgRating, totalReviews }: ProductInfoPro
   const inStock = product.stock > 0;
   const lowStock = product.stock > 0 && product.stock <= 5;
 
-  const handleAddToCart = async () => {
-    const result = await addToCartAction(product.id);
-    if (result.success) {
-      setAdded(true);
-      setTimeout(() => setAdded(false), 2000);
-    }
+  const addItem = useCartStore((state) => state.addItem);
+
+  const handleAddToCart = () => {
+    addItem({
+      id: product.id,
+      productId: product.id,
+      name: product.name,
+      slug: product.slug,
+      price: product.price,
+      image: product.images[0] ?? "",
+      category: product.category.name,
+      stock: product.stock,
+    });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2000);
   };
 
   const handleShare = async () => {

@@ -1,8 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
-import { auth } from "@clerk/nextjs/server";
-import { getUserByExternalId } from "@/lib/services/user.service";
-import { getCartByUserId } from "@/lib/services/cart.service";
 import { Cormorant_Garamond, Outfit } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/home/navbar";
@@ -98,19 +95,6 @@ const organizationJsonLd = {
   },
 };
 
-async function NavbarWrapper() {
-  const { userId: externalId } = await auth();
-  let cartItemCount = 0;
-  if (externalId) {
-    const user = await getUserByExternalId(externalId);
-    if (user) {
-      const cart = await getCartByUserId(user.id);
-      cartItemCount = cart?.totalItems ?? 0;
-    }
-  }
-  return <Navbar cartItemCount={cartItemCount} />;
-}
-
 export default function RootLayout({
   children,
 }: {
@@ -129,7 +113,7 @@ export default function RootLayout({
         </head>
         <body className="font-sans antialiased">
           <Announcement />
-          <NavbarWrapper />
+          <Navbar />
           {children}
           <Footer />
         </body>

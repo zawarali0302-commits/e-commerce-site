@@ -3,20 +3,32 @@
 import Link from "next/link";
 import Image from "next/image";
 import { WishlistButton } from "@/components/ui/wishlist-button";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { formatPrice, cn } from "@/lib/utils";
 import { SerializedProductWithCategory } from "@/lib/serialize";
-import { addToCartAction } from "@/lib/actions/cart.actions";
+import { useCartStore } from "@/lib/stores/cart.store";
 
 interface FeaturedProductsProps {
   products: SerializedProductWithCategory[];
 }
 
 function ProductCard({ product }: { product: SerializedProductWithCategory }) {
-  const [isPending, startTransition] = useTransition();
+  const addItem = useCartStore((state) => state.addItem);
+  const [added, setAdded] = useState(false);
 
   const handleQuickAdd = () => {
-    startTransition(async () => { await addToCartAction(product.id) });
+    addItem({
+      id: product.id,
+      productId: product.id,
+      name: product.name,
+      slug: product.slug,
+      price: product.price,
+      image: product.images[0] ?? "",
+      category: product.category.name,
+      stock: product.stock,
+    });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
   };
 
   const isNew =
@@ -27,10 +39,10 @@ function ProductCard({ product }: { product: SerializedProductWithCategory }) {
   const badge = isOutOfStock
     ? { label: "Sold Out", dark: false }
     : isNew
-      ? { label: "New In", dark: true }
-      : isLowStock
-        ? { label: "Low Stock", dark: false }
-        : null;
+    ? { label: "New In", dark: true }
+    : isLowStock
+    ? { label: "Low Stock", dark: false }
+    : null;
 
   return (
     <div className="group">
@@ -72,7 +84,7 @@ function ProductCard({ product }: { product: SerializedProductWithCategory }) {
               onClick={handleQuickAdd}
               className="w-full bg-[#2a1f18] text-[#f0ebe3] py-3 text-[10px] tracking-[0.2em] uppercase font-normal hover:bg-[#3d2f25] transition-colors"
             >
-              Quick Add
+              {added ? "Added ✓" : "Quick Add"}
             </button>
           </div>
         )}
