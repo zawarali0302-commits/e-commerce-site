@@ -1,0 +1,16 @@
+import { MetadataRoute } from "next";
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://eclat.pk";
+
+export default function robots(): MetadataRoute.Robots {
+  return {
+    rules: [
+      {
+        userAgent: "*",
+        allow: "/",
+        disallow: ["/admin", "/account", "/orders", "/cart", "/api"],
+      },
+    ],
+    sitemap: `${BASE_URL}/sitemap.xml`,
+  };
+}
