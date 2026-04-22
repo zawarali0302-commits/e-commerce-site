@@ -4,14 +4,14 @@ export default function SignUpPage() {
   return (
     <main className="min-h-screen bg-[#f0ebe3] flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
+        {/* <div className="text-center mb-8">
           <h1 className="font-serif text-4xl font-light tracking-[0.2em] uppercase text-[#2a1f18]">
             Éclat
           </h1>
           <p className="text-sm text-stone-500 font-light mt-2">
             Create your account
           </p>
-        </div>
+        </div> */}
         <SignUp
           appearance={{
             elements: {

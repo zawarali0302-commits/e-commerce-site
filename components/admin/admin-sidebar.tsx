@@ -7,6 +7,7 @@ import {
   Package,
   ShoppingBag,
   Tag,
+  Image,
   ExternalLink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -16,6 +17,7 @@ const navItems = [
   { label: "Products", href: "/admin/products", icon: Package },
   { label: "Orders", href: "/admin/orders", icon: ShoppingBag },
   { label: "Categories", href: "/admin/categories", icon: Tag },
+  { label: "Hero Section", href: "/admin/hero", icon: Image },
 ];
 
 export function AdminSidebar() {

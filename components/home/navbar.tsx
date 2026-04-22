@@ -1,13 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { ShoppingBag, Menu, User, Package } from "lucide-react";
+import { ShoppingBag, Menu, User } from "lucide-react";
 import { SearchBar } from "@/components/home/search-bar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useAuth, UserButton } from "@clerk/nextjs";
+import { useAuth, useClerk } from "@clerk/nextjs";
 import { useCartStore } from "@/lib/stores/cart.store";
 
-import { cn } from "@/lib/utils";
 
 const navLinks = [
   { label: "Woman", href: "/products?category=woman" },
@@ -18,10 +17,11 @@ const navLinks = [
 
 export function Navbar() {
   const { isSignedIn } = useAuth();
+  const { signOut } = useClerk();
   const cartCount = useCartStore((state) =>
     state.items.reduce((sum, item) => sum + item.quantity, 0)
   );
-  const displayCount = isSignedIn === false ? 0 : cartCount;
+  const displayCount = cartCount;
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-stone-100">
@@ -50,40 +50,26 @@ export function Navbar() {
                 ))}
                 <div className="border-t border-stone-200 pt-6">
                   {isSignedIn ? (
-                    <div className="flex items-center gap-3">
-                      <UserButton>
-              <UserButton.MenuItems>
-                <UserButton.Link
-                  label="My Account"
-                  labelIcon={<User size={14} />}
-                  href="/account"
-                />
-                <UserButton.Link
-                  label="My Orders"
-                  labelIcon={<Package size={14} />}
-                  href="/orders"
-                />
-              </UserButton.MenuItems>
-            </UserButton>
-                      <Link
-                        href="/account"
-                        className="text-sm tracking-[0.15em] uppercase text-stone-600 hover:text-stone-900 font-light"
-                      >
+                    <div className="flex flex-col gap-3">
+                      <Link href="/account" className="text-sm tracking-[0.15em] uppercase text-stone-600 hover:text-stone-900 font-light">
                         My Account
                       </Link>
+                      <Link href="/orders" className="text-sm tracking-[0.15em] uppercase text-stone-600 hover:text-stone-900 font-light">
+                        My Orders
+                      </Link>
+                      <button
+                        onClick={() => signOut({ redirectUrl: "/" })}
+                        className="text-left text-sm tracking-[0.15em] uppercase text-stone-400 hover:text-stone-700 font-light"
+                      >
+                        Sign Out
+                      </button>
                     </div>
                   ) : (
                     <div className="flex flex-col gap-3">
-                      <Link
-                        href="/sign-in"
-                        className="text-sm tracking-[0.15em] uppercase text-stone-600 hover:text-stone-900 font-light"
-                      >
+                      <Link href="/sign-in" className="text-sm tracking-[0.15em] uppercase text-stone-600 hover:text-stone-900 font-light">
                         Sign In
                       </Link>
-                      <Link
-                        href="/sign-up"
-                        className="text-sm tracking-[0.15em] uppercase text-stone-600 hover:text-stone-900 font-light"
-                      >
+                      <Link href="/sign-up" className="text-sm tracking-[0.15em] uppercase text-stone-600 hover:text-stone-900 font-light">
                         Create Account
                       </Link>
                     </div>
@@ -121,29 +107,13 @@ export function Navbar() {
 
           {/* Auth — desktop */}
           <div className="hidden md:block">
-            {isSignedIn ? (
-              <UserButton>
-              <UserButton.MenuItems>
-                <UserButton.Link
-                  label="My Account"
-                  labelIcon={<User size={14} />}
-                  href="/account"
-                />
-                <UserButton.Link
-                  label="My Orders"
-                  labelIcon={<Package size={14} />}
-                  href="/orders"
-                />
-              </UserButton.MenuItems>
-            </UserButton>
-            ) : (
-              <Link
-                href="/sign-in"
-                className="text-[11px] tracking-[0.15em] uppercase text-stone-500 hover:text-stone-900 transition-colors"
+            <Link
+                href={isSignedIn ? "/account" : "/sign-in"}
+                className="text-stone-500 hover:text-stone-900 transition-colors"
+                aria-label={isSignedIn ? "My account" : "Sign in"}
               >
-                Sign In
+                <User size={18} />
               </Link>
-            )}
           </div>
 
           <Link

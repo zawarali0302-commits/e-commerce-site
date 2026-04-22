@@ -114,3 +114,20 @@ model Wishlist {
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   products Product[]
 }
+
+model HeroSlide {
+  id          String  @id @default(cuid())
+  title       String
+  titleItalic String?
+  subtitle    String?
+  label       String?
+  ctaText     String  @default("Explore Collection")
+  ctaHref     String  @default("/products")
+  imageUrl    String?
+  bgColor     String  @default("#f0ebe3")
+  position    Int     @default(0)
+  isActive    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
