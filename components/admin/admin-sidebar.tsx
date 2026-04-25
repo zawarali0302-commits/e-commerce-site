@@ -8,6 +8,9 @@ import {
   ShoppingBag,
   Tag,
   Image,
+  FileText,
+  Megaphone,
+  Mail,
   ExternalLink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -18,6 +21,9 @@ const navItems = [
   { label: "Orders", href: "/admin/orders", icon: ShoppingBag },
   { label: "Categories", href: "/admin/categories", icon: Tag },
   { label: "Hero Section", href: "/admin/hero", icon: Image },
+  { label: "Editorial", href: "/admin/editorial", icon: FileText },
+  { label: "Announcement", href: "/admin/announcement", icon: Megaphone },
+  { label: "Subscribers", href: "/admin/subscribers", icon: Mail },
 ];
 
 export function AdminSidebar() {

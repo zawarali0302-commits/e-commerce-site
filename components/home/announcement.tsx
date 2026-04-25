@@ -1,13 +1,14 @@
-"use client";
+import { getActiveAnnouncement } from "@/lib/services/announcement.service";
 
-import { usePathname } from "next/navigation";
+export async function Announcement() {
+  const announcement = await getActiveAnnouncement();
 
-export function Announcement() {
-    const pathname = usePathname();
-    if (pathname.startsWith("/admin")) return null;
+  const text = announcement?.text ??
+    "New Collection Arriving — Free Shipping on Orders Over PKR 3,000";
+
   return (
     <div className="bg-[#1a1a1a] text-[#e8ddd0] text-center py-2.5 text-[11px] tracking-[0.12em] uppercase font-light">
-      New Collection Arriving — Free Shipping on Orders Over PKR 3,000
+      {text}
     </div>
   );
 }
