@@ -50,7 +50,7 @@ export async function Editorial() {
           {content.body}
         </p>
         <Link
-          href={content.ctaHref}
+          href={"id" in content ? `/editorial/${content.id}` : content.ctaHref}
           className="self-start px-8 py-3 border border-[#2a1f18] text-[11px] tracking-[0.2em] uppercase text-[#2a1f18] font-normal hover:bg-[#2a1f18] hover:text-[#f0ebe3] transition-all duration-200"
         >
           {content.ctaText}

@@ -39,14 +39,15 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
                 i === 0 ? "aspect-[3/5]" : "aspect-[3/4]"
               } ${FALLBACK_BG[i] ?? "bg-stone-200"}`}
             >
-              {/* Uncomment when images are available:
-              <Image
-                src={`/images/category-${cat.slug}.jpg`}
-                alt={cat.name}
-                fill
-                className="object-cover object-top group-hover:scale-105 transition-transform duration-700"
-              />
-              */}
+              {cat.image ? (
+                <Image
+                  src={cat.image}
+                  alt={cat.name}
+                  fill
+                  sizes="(max-width: 768px) 50vw, 33vw"
+                  className="object-cover object-top group-hover:scale-105 transition-transform duration-700"
+                />
+              ) : null}
               <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors duration-300" />
             </div>
             <div className="pt-3.5 pb-1 flex items-baseline justify-between">
