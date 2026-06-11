@@ -1,14 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { BrevoClient } from "@getbrevo/brevo";
 import prisma from "../prisma";
+import { sendEmail } from "../email";
+import { welcomeEmailTemplate } from "../email-templates";
 
 export type NewsletterResult =
   | { success: true }
   | { success: false; error: string };
-
-const brevo = new BrevoClient({ apiKey: process.env.BREVO_API_KEY! });
 
 export async function subscribeToNewsletterAction(
   email: string
@@ -31,16 +30,11 @@ export async function subscribeToNewsletterAction(
     data: { email: normalizedEmail },
   });
 
-  // Sync to Brevo
-  try {
-    await brevo.contacts.createContact({
-      email: normalizedEmail,
-      listIds: [2], // Add your Brevo list ID here
-      updateEnabled: true,
-    });
-  } catch (err: any) {
-    console.error("Brevo sync error:", err?.message ?? err);
-  }
+  await sendEmail({
+    to: normalizedEmail,
+    subject: "Welcome to Éclat",
+    html: welcomeEmailTemplate(null),
+  });
 
   revalidatePath("/admin/subscribers");
   return { success: true };

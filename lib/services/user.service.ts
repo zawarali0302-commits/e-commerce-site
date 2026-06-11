@@ -1,4 +1,6 @@
 import { currentUser } from "@clerk/nextjs/server";
+import { sendEmail } from "@/lib/email";
+import { welcomeEmailTemplate } from "@/lib/email-templates";
 import prisma from "../prisma";
 
 export async function upsertUser({
@@ -40,7 +42,7 @@ export async function getUserByExternalId(externalId: string) {
       .filter(Boolean)
       .join(" ") || null;
 
-    return prisma.user.create({
+    const newUser = await prisma.user.create({
       data: {
         externalId,
         email,
@@ -48,6 +50,15 @@ export async function getUserByExternalId(externalId: string) {
         imageUrl: clerkUser.imageUrl ?? null,
       },
     });
+
+    // Send welcome email
+    await sendEmail({
+      to: email,
+      subject: "Welcome to Éclat",
+      html: welcomeEmailTemplate(name),
+    });
+
+    return newUser;
   } catch {
     return null;
   }

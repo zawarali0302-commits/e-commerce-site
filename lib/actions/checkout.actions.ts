@@ -1,10 +1,12 @@
 "use server";
 
 import { auth } from "@clerk/nextjs/server";
+import { sendEmail } from "@/lib/email";
+import { orderConfirmationEmailTemplate } from "@/lib/email-templates";
 import { getUserByExternalId } from "@/lib/services/user.service";
 import { CartItem } from "@/lib/stores/cart.store";
-import { Prisma } from "@/app/generated/prisma/client";
 import prisma from "../prisma";
+import { Prisma } from "@/app/generated/prisma/client";
 
 export type CheckoutResult =
   | { success: true; orderId: string }
@@ -74,6 +76,27 @@ export async function syncCartToOrder(
       );
 
       return newOrder;
+    });
+
+    // Send order confirmation email
+    await sendEmail({
+      to: user.email,
+      subject: `Order Confirmed — #${order.id.slice(-8).toUpperCase()}`,
+      html: orderConfirmationEmailTemplate({
+        orderId: order.id,
+        name: user.name,
+        items: items.map((item) => {
+          const product = products.find((p) => p.id === item.productId)!;
+          return {
+            name: item.name,
+            quantity: item.quantity,
+            price: Number(product.price),
+          };
+        }),
+        totalAmount,
+        address,
+        phone,
+      }),
     });
 
     return { success: true, orderId: order.id };
