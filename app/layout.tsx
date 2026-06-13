@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
 import { Cormorant_Garamond, Outfit } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/home/navbar";
 import { Announcement } from "@/components/home/announcement";
 import { Footer } from "@/components/home/footer";
+import { SessionProvider } from "@/components/providers/session-provider";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -101,7 +101,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
+    <SessionProvider>
       <html lang="en" className={`${cormorant.variable} ${outfit.variable}`}>
         <head>
           <script
@@ -118,6 +118,6 @@ export default function RootLayout({
           <Footer />
         </body>
       </html>
-    </ClerkProvider>
+    </SessionProvider>
   );
 }

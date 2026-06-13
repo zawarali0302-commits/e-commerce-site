@@ -2,19 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { auth } from "@clerk/nextjs/server";
-import { getUserByExternalId } from "@/lib/services/user.service";
-import prisma from "@/lib/prisma";
-
-// ─── Auth guard ───────────────────────────────────────────────────────────────
-
-async function requireAdmin() {
-  const { userId: externalId } = await auth();
-  if (!externalId) throw new Error("Unauthorized");
-  const user = await getUserByExternalId(externalId);
-  if (!user || user.role !== "ADMIN") throw new Error("Forbidden");
-  return user;
-}
+import { requireAdmin } from "@/lib/require-admin";
+import prisma from "../prisma";
 
 // ─── Products ─────────────────────────────────────────────────────────────────
 
@@ -91,8 +80,9 @@ export async function createCategoryAction(formData: FormData) {
 
   const name = formData.get("name") as string;
   const slug = name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+  const imageUrl = (formData.get("imageUrl") as string) || null;
 
-  await prisma.category.create({ data: { name, slug } });
+  await prisma.category.create({ data: { name, slug, imageUrl } });
 
   revalidatePath("/admin/categories");
   redirect("/admin/categories");
@@ -103,8 +93,9 @@ export async function updateCategoryAction(id: string, formData: FormData) {
 
   const name = formData.get("name") as string;
   const slug = name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+  const imageUrl = (formData.get("imageUrl") as string) || null;
 
-  await prisma.category.update({ where: { id }, data: { name, slug } });
+  await prisma.category.update({ where: { id }, data: { name, slug, imageUrl } });
 
   revalidatePath("/admin/categories");
   redirect("/admin/categories");

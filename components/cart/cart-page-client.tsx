@@ -7,7 +7,7 @@ import { Minus, Plus, X, ShoppingBag, ArrowLeft } from "lucide-react";
 import { useCartStore } from "@/lib/stores/cart.store";
 import { formatPrice, cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@clerk/nextjs";
+import { useSession } from "next-auth/react";
 import { syncCartToOrder } from "@/lib/actions/checkout.actions";
 
 function EmptyCart() {
@@ -119,7 +119,8 @@ function CheckoutForm({ onSubmit, loading, error }: { onSubmit: (address: string
 
 export function CartPageClient() {
   const { items, totalItems, totalPrice, clearCart } = useCartStore();
-  const { isSignedIn } = useAuth();
+  const { status } = useSession();
+  const isSignedIn = status === "authenticated";
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();

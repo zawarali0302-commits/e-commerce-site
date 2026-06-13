@@ -94,7 +94,7 @@ export async function getProductBySlug(slug: string) {
       user: {
         id: r.user.id,
         name: r.user.name,
-        imageUrl: r.user.imageUrl,
+        imageUrl: r.user.image,
       },
     })),
   };

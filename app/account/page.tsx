@@ -1,14 +1,14 @@
 import { Metadata } from "next";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { getUserByExternalId } from "@/lib/services/user.service";
+import { getUserById } from "@/lib/services/user.service";
 import { getUserOrders } from "@/lib/services/order.service";
 import { getWishlistByUserId } from "@/lib/services/wishlist.service";
 import { formatPrice } from "@/lib/utils";
 import { Package, Heart, ChevronRight } from "lucide-react";
-import { SignOutButton } from "@clerk/nextjs";
+import { SignOutButton } from "@/components/account/sign-out-button";
 
 export const metadata: Metadata = {
   title: "My Account",
@@ -16,15 +16,11 @@ export const metadata: Metadata = {
 };
 
 export default async function AccountPage() {
-  const { userId: externalId } = await auth();
-  if (!externalId) redirect("/sign-in");
+  const session = await auth();
+  if (!session?.user?.id) redirect("/sign-in");
 
-  const [clerkUser, user] = await Promise.all([
-    currentUser(),
-    getUserByExternalId(externalId),
-  ]);
-
-  if (!user || !clerkUser) redirect("/sign-in");
+  const user = await getUserById(session.user.id);
+  if (!user) redirect("/sign-in");
 
   const [orders, wishlist] = await Promise.all([
     getUserOrders(user.id),
@@ -52,9 +48,9 @@ export default async function AccountPage() {
           {/* Profile */}
           <div className="border border-stone-100 p-6">
             <div className="flex items-center gap-4 mb-5">
-              {clerkUser.imageUrl ? (
+              {user.image ? (
                 <Image
-                  src={clerkUser.imageUrl}
+                  src={user.image}
                   alt={user.name ?? "Avatar"}
                   width={52}
                   height={52}
@@ -117,11 +113,7 @@ export default async function AccountPage() {
           </div>
 
           {/* Sign out */}
-          <SignOutButton>
-            <button className="w-full py-2.5 border border-stone-200 text-[10px] tracking-[0.18em] uppercase text-stone-400 font-normal hover:border-stone-400 hover:text-stone-700 transition-colors">
-              Sign Out
-            </button>
-          </SignOutButton>
+          <SignOutButton />
         </div>
 
         {/* Right — orders + wishlist */}

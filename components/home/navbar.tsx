@@ -4,9 +4,11 @@ import Link from "next/link";
 import { ShoppingBag, Menu, User } from "lucide-react";
 import { SearchBar } from "@/components/home/search-bar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useAuth, useClerk } from "@clerk/nextjs";
+import { useSession, signOut } from "next-auth/react";
 import { useCartStore } from "@/lib/stores/cart.store";
 
+import { cn } from "@/lib/utils";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 const navLinks = [
   { label: "Woman", href: "/products?category=woman" },
@@ -16,12 +18,12 @@ const navLinks = [
 ];
 
 export function Navbar() {
-  const { isSignedIn } = useAuth();
-  const { signOut } = useClerk();
+  const { status } = useSession();
+  const isSignedIn = status === "authenticated";
   const cartCount = useCartStore((state) =>
     state.items.reduce((sum, item) => sum + item.quantity, 0)
   );
-  const displayCount = cartCount;
+  const displayCount = status === "unauthenticated" ? 0 : cartCount;
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-stone-100">
@@ -58,7 +60,7 @@ export function Navbar() {
                         My Orders
                       </Link>
                       <button
-                        onClick={() => signOut({ redirectUrl: "/" })}
+                        onClick={() => signOut({ callbackUrl: "/" })}
                         className="text-left text-sm tracking-[0.15em] uppercase text-stone-400 hover:text-stone-700 font-light"
                       >
                         Sign Out
@@ -106,7 +108,7 @@ export function Navbar() {
           <SearchBar />
 
           {/* Auth — desktop */}
-          <div className="hidden md:block">
+          {/* <div className="hidden md:block">
             <Link
                 href={isSignedIn ? "/account" : "/sign-in"}
                 className="text-stone-500 hover:text-stone-900 transition-colors"
@@ -114,7 +116,31 @@ export function Navbar() {
               >
                 <User size={18} />
               </Link>
-          </div>
+          </div> */}
+
+          <DropdownMenu >
+              <DropdownMenuTrigger asChild>
+                <button className="text-stone-500 hover:text-stone-900 transition-colors">
+                  <User size={18} />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {isSignedIn ? (
+                  <DropdownMenuItem asChild>
+                    <Link href="/account">My Account</Link>
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem asChild>
+                    <Link href="/sign-in">Sign In</Link>
+                  </DropdownMenuItem>
+                )}
+                {isSignedIn && (
+                  <DropdownMenuItem asChild>
+                    <button onClick={() => signOut({ callbackUrl: "/" })}>Sign Out</button>
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+          </DropdownMenu>
 
           <Link
             href="/cart"

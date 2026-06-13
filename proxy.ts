@@ -1,22 +1,19 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth";
+import { NextResponse } from "next/server";
 
-const isProtectedRoute = createRouteMatcher([
-  "/account(.*)",
-  "/checkout(.*)",
-  "/orders(.*)",
-  "/admin(.*)",
-]);
+const protectedRoutes = ["/account", "/checkout", "/orders", "/admin"];
 
-export default clerkMiddleware(async (auth, req) => {
-  if (isProtectedRoute(req)) {
-    await auth.protect();
+export default auth((req) => {
+  const { pathname } = req.nextUrl;
+  const isProtected = protectedRoutes.some((route) => pathname.startsWith(route));
+
+  if (isProtected && !req.auth) {
+    const signInUrl = new URL("/sign-in", req.nextUrl.origin);
+    signInUrl.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(signInUrl);
   }
 });
 
 export const config = {
-  matcher: [
-    // Skip Next.js internals and static files
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    "/(api|trpc)(.*)",
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
 };

@@ -2,8 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createReview, hasUserReviewedProduct } from "@/lib/services/review.service";
-import { auth } from "@clerk/nextjs/server"; // swap for your auth provider
-import prisma from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 
 export type ReviewActionState = {
   success: boolean;
@@ -16,8 +15,8 @@ export async function submitReviewAction(
   comment: string
 ): Promise<ReviewActionState> {
   // 1. Auth check
-  const { userId: externalId } = await auth();
-  if (!externalId) {
+  const session = await auth();
+  if (!session?.user?.id) {
     return { success: false, error: "You must be signed in to leave a review." };
   }
 
@@ -29,14 +28,8 @@ export async function submitReviewAction(
     return { success: false, error: "Review must be at least 10 characters." };
   }
 
-  // 3. Look up internal user from externalId
-  const user = await prisma.user.findUnique({ where: { externalId } });
-  if (!user) {
-    return { success: false, error: "User not found." };
-  }
-
-  // 4. Check for duplicate review
-  const alreadyReviewed = await hasUserReviewedProduct(user.id, productId);
+  // 3. Check for duplicate review
+  const alreadyReviewed = await hasUserReviewedProduct(session.user.id, productId);
   if (alreadyReviewed) {
     return { success: false, error: "You have already reviewed this product." };
   }
@@ -45,7 +38,7 @@ export async function submitReviewAction(
   try {
     await createReview({
       productId,
-      userId: user.id,
+      userId: session.user.id,
       rating,
       comment: comment.trim(),
     });

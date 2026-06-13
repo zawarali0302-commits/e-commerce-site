@@ -116,10 +116,10 @@ async function main() {
   console.log("✓ Editorial created");
 
   // ─── Categories ────────────────────────────────────────────────────────────
-  const readyToWear = await prisma.category.create({ data: { name: "Ready to Wear", slug: "ready-to-wear", image: imgs.cat1 } });
-  const unstitched = await prisma.category.create({ data: { name: "Unstitched", slug: "unstitched", image: imgs.cat2 } });
-  const accessories = await prisma.category.create({ data: { name: "Accessories", slug: "accessories", image: imgs.cat3 } });
-  const luxuryPret = await prisma.category.create({ data: { name: "Luxury Pret", slug: "luxury-pret", image: imgs.cat4 } });
+  const readyToWear = await prisma.category.create({ data: { name: "Ready to Wear", slug: "ready-to-wear", imageUrl: imgs.cat1 } });
+  const unstitched = await prisma.category.create({ data: { name: "Unstitched", slug: "unstitched", imageUrl: imgs.cat2 } });
+  const accessories = await prisma.category.create({ data: { name: "Accessories", slug: "accessories", imageUrl: imgs.cat3 } });
+  const luxuryPret = await prisma.category.create({ data: { name: "Luxury Pret", slug: "luxury-pret", imageUrl: imgs.cat4 } });
   console.log("✓ Categories created");
 
   // ─── Products ──────────────────────────────────────────────────────────────

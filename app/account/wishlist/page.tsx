@@ -1,21 +1,17 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Heart } from "lucide-react";
-import { getUserByExternalId } from "@/lib/services/user.service";
 import { getWishlistByUserId } from "@/lib/services/wishlist.service";
 import { formatPrice } from "@/lib/utils";
 import { WishlistRemoveButton } from "@/components/account/wishlist-remove-button";
 
 export default async function WishlistPage() {
-  const { userId: externalId } = await auth();
-  if (!externalId) redirect("/sign-in");
+  const session = await auth();
+  if (!session?.user?.id) redirect("/sign-in");
 
-  const user = await getUserByExternalId(externalId);
-  if (!user) redirect("/sign-in");
-
-  const wishlist = await getWishlistByUserId(user.id);
+  const wishlist = await getWishlistByUserId(session.user.id);
 
   return (
     <main className="min-h-screen">
@@ -54,9 +50,7 @@ export default async function WishlistPage() {
         <div className="px-6 md:px-10 py-8 grid grid-cols-2 md:grid-cols-4 gap-5 md:gap-6">
           {wishlist.products.map((product) => (
             <div key={product.id} className="group relative">
-              {/* Remove button */}
               <WishlistRemoveButton productId={product.id} />
-
               <Link href={`/product/${product.slug}`}>
                 <div className="relative aspect-[3/4] bg-stone-100 overflow-hidden mb-3.5">
                   {product.images[0] ? (

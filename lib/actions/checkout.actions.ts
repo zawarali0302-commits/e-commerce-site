@@ -1,12 +1,12 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth";
 import { sendEmail } from "@/lib/email";
 import { orderConfirmationEmailTemplate } from "@/lib/email-templates";
-import { getUserByExternalId } from "@/lib/services/user.service";
+import { getUserById } from "@/lib/services/user.service";
 import { CartItem } from "@/lib/stores/cart.store";
-import prisma from "../prisma";
 import { Prisma } from "@/app/generated/prisma/client";
+import prisma from "../prisma";
 
 export type CheckoutResult =
   | { success: true; orderId: string }
@@ -17,10 +17,10 @@ export async function syncCartToOrder(
   address: string,
   phone: string
 ): Promise<CheckoutResult> {
-  const { userId: externalId } = await auth();
-  if (!externalId) return { success: false, error: "You must be signed in to checkout." };
+  const session = await auth();
+  if (!session?.user?.id) return { success: false, error: "You must be signed in to checkout." };
 
-  const user = await getUserByExternalId(externalId);
+  const user = await getUserById(session.user.id);
   if (!user) return { success: false, error: "User not found." };
 
   if (items.length === 0) return { success: false, error: "Your cart is empty." };
