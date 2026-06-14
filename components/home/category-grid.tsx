@@ -39,9 +39,9 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
                 i === 0 ? "aspect-[3/5]" : "aspect-[3/4]"
               } ${FALLBACK_BG[i] ?? "bg-stone-200"}`}
             >
-              {cat.image ? (
+              {cat.imageUrl ? (
                 <Image
-                  src={cat.image}
+                  src={cat.imageUrl}
                   alt={cat.name}
                   fill
                   sizes="(max-width: 768px) 50vw, 33vw"
