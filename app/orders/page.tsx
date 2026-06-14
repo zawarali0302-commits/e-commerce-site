@@ -1,10 +1,9 @@
 import { Metadata } from "next";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Package } from "lucide-react";
-import { getUserByExternalId } from "@/lib/services/user.service";
 import { getUserOrders, SerializedOrderItem } from "@/lib/services/order.service";
 import { formatPrice } from "@/lib/utils";
 
@@ -34,10 +33,10 @@ export const metadata: Metadata = {
 };
 
 export default async function OrdersPage() {
-  const { userId: externalId } = await auth();
-  if (!externalId) redirect("/sign-in");
+  const session = await auth();
+  if (!session?.user?.id) redirect("/sign-in");
 
-  const user = await getUserByExternalId(externalId);
+  const user = { id: session.user.id };
   if (!user) redirect("/sign-in");
 
   const orders = await getUserOrders(user.id);

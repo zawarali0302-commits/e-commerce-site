@@ -1,10 +1,9 @@
 import { notFound, redirect } from "next/navigation";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth";
 import Link from "next/link";
 import Image from "next/image";
 import { CheckCircle } from "lucide-react";
 import { getOrderById } from "@/lib/services/order.service";
-import { getUserByExternalId } from "@/lib/services/user.service";
 import { formatPrice } from "@/lib/utils";
 
 interface OrderPageProps {
@@ -16,18 +15,15 @@ export default async function OrderPage({ params, searchParams }: OrderPageProps
   const { orderId } = await params;
   const { success } = await searchParams;
 
-  const { userId: externalId } = await auth();
-  if (!externalId) redirect("/sign-in");
+  const session = await auth();
+  if (!session?.user?.id) redirect("/sign-in");
 
-  const [user, order] = await Promise.all([
-    getUserByExternalId(externalId),
-    getOrderById(orderId),
-  ]);
+  const order = await getOrderById(orderId);
 
-  if (!order || !user) notFound();
+  if (!order) notFound();
 
   // Ensure the order belongs to the current user
-  if (order.userId !== user.id) notFound();
+  if (order.userId !== session.user.id) notFound();
 
   const isConfirmation = success === "true";
 
