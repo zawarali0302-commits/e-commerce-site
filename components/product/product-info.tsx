@@ -146,7 +146,7 @@ export function ProductInfo({ product, avgRating, totalReviews }: ProductInfoPro
       )}
 
       {/* CTA buttons */}
-      <div className="flex gap-3">
+      <div className="flex gap-2 md:gap-3">
         <button
           onClick={handleAddToCart}
           disabled={!inStock}
@@ -164,11 +164,11 @@ export function ProductInfo({ product, avgRating, totalReviews }: ProductInfoPro
         <WishlistButton
           productId={product.id}
           size={16}
-          className="w-12 h-12 border border-stone-200 hover:border-stone-900"
+          className="w-11 h-11 md:w-12 md:h-12 border border-stone-200 hover:border-stone-900"
         />
         <button
           onClick={handleShare}
-          className="w-12 h-12 border border-stone-200 flex items-center justify-center hover:border-stone-900 transition-colors"
+          className="w-11 h-11 md:w-12 md:h-12 border border-stone-200 flex items-center justify-center hover:border-stone-900 transition-colors"
           aria-label="Share"
         >
           <Share2 size={15} className="text-stone-500" />

@@ -39,7 +39,7 @@ export function Newsletter() {
       ) : (
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col sm:flex-row gap-0 max-w-md mx-auto"
+          className="flex flex-col sm:flex-row gap-0 max-w-md mx-auto w-full"
         >
           <input
             type="email"
@@ -50,7 +50,7 @@ export function Newsletter() {
               if (status === "error") setStatus("idle");
             }}
             placeholder="Your email address"
-            className="flex-1 px-5 py-3.5 border border-[#c9bba8] bg-white text-sm text-[#2a1f18] outline-none focus:border-[#2a1f18] transition-colors font-light placeholder:text-[#a89080]"
+            className="w-full flex-1 px-5 py-3.5 border border-[#c9bba8] sm:border-r-0 bg-white text-sm text-[#2a1f18] outline-none focus:border-[#2a1f18] transition-colors font-light placeholder:text-[#a89080]"
           />
           <button
             type="submit"

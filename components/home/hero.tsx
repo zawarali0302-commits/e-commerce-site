@@ -31,7 +31,7 @@ export async function Hero() {
     parseInt(color.replace("#", ""), 16) < 0x888888 * 3;
 
   return (
-    <section className="grid grid-cols-1 md:grid-cols-2 min-h-[70vh] md:min-h-[580px]">
+    <section className="grid grid-cols-1 md:grid-cols-2 min-h-[70vh] md:min-h-[580px] md:max-h-[700px]">
       {/* Main panel */}
       <Link
         href={mainSlide.ctaHref}
@@ -65,14 +65,14 @@ export async function Hero() {
       </Link>
 
       {/* Sub panels */}
-      <div className="grid grid-rows-2">
+      <div className="grid grid-cols-2 md:grid-cols-1 md:grid-rows-2">
         {displaySubs.map((sub) => {
           const dark = isDark(sub.bgColor);
           return (
             <Link
               key={sub.id}
               href={"ctaHref" in sub ? sub.ctaHref ?? "/products" : "/products"}
-              className="relative flex flex-col justify-end p-8 md:p-10 min-h-[180px] overflow-hidden group"
+              className="relative flex flex-col justify-end p-6 md:p-10 min-h-[140px] md:min-h-[180px] overflow-hidden group"
               style={{ backgroundColor: sub.bgColor }}
             >
               {sub.imageUrl && (

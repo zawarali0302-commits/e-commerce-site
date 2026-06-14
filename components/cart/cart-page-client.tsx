@@ -34,9 +34,9 @@ function CartItemRow({ item }: { item: ReturnType<typeof useCartStore.getState>[
   const { updateQuantity, removeItem } = useCartStore();
 
   return (
-    <div className="flex gap-4 py-6 border-b border-stone-100">
+    <div className="flex gap-3 md:gap-4 py-5 md:py-6 border-b border-stone-100">
       <Link href={`/product/${item.slug}`} className="shrink-0">
-        <div className="relative w-24 aspect-[3/4] bg-stone-100 overflow-hidden">
+        <div className="relative w-20 md:w-24 aspect-[3/4] bg-stone-100 overflow-hidden shrink-0">
           {item.image ? (
             <Image src={item.image} alt={item.name} fill sizes="96px" className="object-cover object-top" />
           ) : (
@@ -155,7 +155,7 @@ export function CartPageClient() {
       </div>
 
       {items.length === 0 ? <EmptyCart /> : (
-        <div className="px-6 md:px-10 py-8 grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-16 items-start">
+        <div className="px-4 md:px-10 py-8 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-16 items-start">
           <div className="md:col-span-2">
             {items.map((item) => <CartItemRow key={item.productId} item={item} />)}
             <button onClick={clearCart} className="mt-4 text-[10px] tracking-[0.15em] uppercase text-stone-300 hover:text-red-400 transition-colors">
